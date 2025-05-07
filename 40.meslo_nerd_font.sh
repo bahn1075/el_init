@@ -3,6 +3,9 @@
 # MesloLGS Nerd Font 설치 스크립트
 # RHEL9 계열 OS에서 실행
 
+# zip 부터 설치
+sudo dnf install zip -y
+
 # 최신 릴리스 정보 가져오기
 echo "MesloLGS Nerd Font 최신 버전을 확인 중입니다..."
 LATEST_RELEASE=$(curl -s https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest | grep "tag_name" | cut -d '"' -f 4)
