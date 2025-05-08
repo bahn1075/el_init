@@ -14,10 +14,10 @@ sudo dnf remove docker \
 sudo dnf -y install dnf-plugins-core
 
 # Docker CE 저장소 추가
-sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+sudo dnf -y config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 
 # Docker 및 관련 패키지 설치
-sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Docker 서비스 활성화 및 시작
 sudo systemctl enable --now docker
