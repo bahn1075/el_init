@@ -1,5 +1,7 @@
 ## install zsh
 sudo dnf install zsh -y
+## oh my zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ## 설치 직후 zsh 적용
 zsh
 ## 현재 사용자의 기본 shell을 zsh로 변경
