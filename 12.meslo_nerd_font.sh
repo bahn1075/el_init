@@ -3,16 +3,6 @@
 # MesloLGS Nerd Font 설치 스크립트
 # RHEL9 계열 OS에서 실행
 
-
-# epel release 설치
-sudo dnf install epel-release -y
-
-# bat, vim , btop 설치
-sudo dnf install bat vim btop -y
-
-# zip 부터 설치
-sudo dnf install zip -y
-
 # fc-cache 명령어 수행을 위한 fontconfig 설치
 sudo dnf install fontconfig -y
 
