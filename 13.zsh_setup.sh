@@ -8,6 +8,11 @@ zsh
 sudo usermod -s /usr/bin/zsh $USER
 
 ## p110k theme apply
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+## git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 ## .zshrc에 p10k 적용
-sed -i 's/robbyrussell/powerlevel10k\/powerlevel10k/g' ~/.zshrc
+## sed -i 's/robbyrussell/powerlevel10k\/powerlevel10k/g' ~/.zshrc
+
+## spaceship prompt로 변경
+mkdir -p "$HOME/.zsh"
+git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git "$HOME/.zsh/spaceship"
+source "$HOME/.zsh/spaceship/spaceship.zsh"
