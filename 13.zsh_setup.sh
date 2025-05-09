@@ -14,6 +14,7 @@ sudo dnf install zsh -y
 ## spaceship prompt로 변경
 mkdir -p "$HOME/.zsh"
 git clone --depth=1 https://github.com/spaceship-prompt/spaceship-prompt.git "$HOME/.zsh/spaceship"
+echo 'source "$HOME/.zsh/spaceship/spaceship.zsh"' >> ~/.zshrc
 source "$HOME/.zsh/spaceship/spaceship.zsh"
 
 ## 현재 사용자의 기본 shell을 zsh로 변경
