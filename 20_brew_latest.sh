@@ -35,3 +35,4 @@ echo "Homebrew 설치 또는 업데이트가 완료되었습니다."
 echo "설치된 Homebrew 버전을 확인합니다..."
 brew --version
 
+source ~/.zshrc
