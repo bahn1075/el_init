@@ -16,8 +16,9 @@ if ! command -v brew &> /dev/null; then
   fi
 
   echo "Homebrew 설치가 완료되었습니다. 환경 변수를 설정합니다..."
-  echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    echo >> /home/$USER/.zshrc
+    echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/$USER/.zshrc
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 else
   echo "Homebrew가 이미 설치되어 있습니다. 최신 버전으로 업데이트를 진행합니다..."
   brew update
@@ -32,5 +33,5 @@ fi
 
 echo "Homebrew 설치 또는 업데이트가 완료되었습니다."
 echo "설치된 Homebrew 버전을 확인합니다..."
-
+brew --version
 
