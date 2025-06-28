@@ -9,13 +9,13 @@ if ! command -v minikube &> /dev/null; then
   echo "Minikube가 설치되어 있지 않습니다. 설치를 진행합니다..."
 
   # Minikube 바이너리 다운로드 및 설치
-  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  curl -Lo /tmp/minikube-linux-amd64 https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   if [ $? -ne 0 ]; then
     echo "Minikube 바이너리 다운로드에 실패했습니다."
     exit 1
   fi
 
-  sudo install minikube-linux-amd64 /usr/local/bin/minikube
+  sudo install /tmp/minikube-linux-amd64 /usr/local/bin/minikube
   if [ $? -ne 0 ]; then
     echo "Minikube 설치에 실패했습니다."
     exit 1
@@ -28,7 +28,7 @@ fi
 
 # Minikube 초기 기동 및 설정
 echo "Minikube를 초기화하고 설정을 적용합니다..."
-minikube start --cpus=4 --memory=18432
+minikube start --cpus=4 --memory=13312 #노트북에서는 13GB 설정
 if [ $? -ne 0 ]; then
   echo "Minikube 초기화에 실패했습니다."
   exit 1
