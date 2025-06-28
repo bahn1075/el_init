@@ -1,3 +1,5 @@
+
+
 ## install zsh
 sudo dnf install zsh -y
 ## oh my zsh
@@ -6,8 +8,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 ## spaceship prompt로 변경
 git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
-sed -i 's/robbyrussell/spaceship/g' ~/.zshrc
-
+#sed -i 's/robbyrussell/spaceship/g' ~/.zshrc
+## zshrc/.zshrc 파일을 홈디렉토리로 복사
+cp /app/el_init/zshrc/.zshrc ~/.zshrc
 
 ## 현재 사용자의 기본 shell을 zsh로 변경
 sudo usermod -s /usr/bin/zsh $USER
