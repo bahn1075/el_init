@@ -8,7 +8,7 @@ echo "Homebrew 설치 또는 업데이트를 확인합니다..."
 # Homebrew 설치 여부 확인
 if ! command -v brew &> /dev/null; then
   echo "Homebrew가 설치되어 있지 않습니다. 설치를 진행합니다..."
-  sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
   if [ $? -ne 0 ]; then
     echo "Homebrew 설치에 실패했습니다."
