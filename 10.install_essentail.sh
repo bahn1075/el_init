@@ -1,10 +1,6 @@
 sudo tee /etc/wsl.conf > /dev/null <<'EOF'
 [user]
 default=cozy
-
-[boot]
-command="cd ~"
-
 [boot]
 systemd=true
 EOF

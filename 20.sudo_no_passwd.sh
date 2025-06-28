@@ -11,8 +11,8 @@ read -p "Sudo 설정을 변경할 사용자의 이름을 입력하세요: " targ
 
 # 사용자 이름이 비어 있는지 확인
 if [ -z "$target_username" ]; then
-  echo "사용자 이름이 입력되지 않았습니다. 스크립트를 종료합니다."
-  exit 1
+  echo "사용자 이름이 입력되지 않았습니다. 현재 로그인한 사용자($USER)로 진행합니다."
+  target_username="$USER"
 fi
 
 # 사용자가 시스템에 존재하는지 확인
