@@ -1,0 +1,178 @@
+# stress-test-deployment.yaml
+# 노드 스케일링을 트리거하기 위한 리소스 집약적 워크로드
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stress-test-workload
+  labels:
+    app: stress-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stress-test
+  template:
+    metadata:
+      labels:
+        app: stress-test
+    spec:
+      containers:
+      - name: cpu-stress
+        image: polinux/stress
+        command: ["stress"]
+        args: ["--cpu", "2", "--timeout", "3600s", "--verbose"]
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+      # Node affinity를 사용하여 워커 노드에만 배포
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+---
+# memory-intensive-deployment.yaml
+# 메모리 집약적 워크로드
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory-intensive-workload
+  labels:
+    app: memory-intensive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memory-intensive
+  template:
+    metadata:
+      labels:
+        app: memory-intensive
+    spec:
+      containers:
+      - name: memory-stress
+        image: polinux/stress
+        command: ["stress"]
+        args: ["--vm", "2", "--vm-bytes", "1G", "--timeout", "3600s"]
+        resources:
+          requests:
+            memory: "1.5Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+---
+# scale-trigger-job.yaml
+# 대량의 Pod를 생성하여 스케일링 트리거
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: scale-trigger-job
+spec:
+  parallelism: 8  # 동시에 8개 Pod 실행
+  completions: 8
+  template:
+    spec:
+      containers:
+      - name: workload
+        image: nginx:alpine
+        command: ["sh", "-c"]
+        args: ["echo 'Starting heavy workload...'; stress --cpu 1 --timeout 300s; echo 'Workload completed'"]
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "800m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+      restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+---
+# pod-anti-affinity-deployment.yaml
+# Pod들이 다른 노드에 분산되도록 강제하는 배포
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distributed-workload
+  labels:
+    app: distributed
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: distributed
+  template:
+    metadata:
+      labels:
+        app: distributed
+    spec:
+      containers:
+      - name: app
+        image: nginx:alpine
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      affinity:
+        # Pod가 다른 노드에 분산되도록 설정
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - distributed
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+---
+# metrics-server-patch.yaml
+# Minikube에서 metrics-server가 작동하도록 패치
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-server
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: metrics-server
+        args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+        - --kubelet-insecure-tls  # Minikube용 추가 설정
