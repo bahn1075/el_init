@@ -1,4 +1,4 @@
-su - cozy
+#bin/bash
 #sudo tee /etc/wsl.conf > /dev/null <<'EOF'
 #[user]
 #default=cozy
