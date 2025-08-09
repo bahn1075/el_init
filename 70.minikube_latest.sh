@@ -28,7 +28,7 @@ fi
 
 # Minikube 초기 기동 및 설정
 echo "Minikube를 초기화하고 설정을 적용합니다..."
-minikube start --cpus=4 --memory=13312 #노트북에서는 13GB 설정
+minikube start --nodes 2 --cpus=4 --memory=8192 --kubernetes-version=latest
 if [ $? -ne 0 ]; then
   echo "Minikube 초기화에 실패했습니다."
   exit 1
