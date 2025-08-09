@@ -1,9 +1,16 @@
+# stress-test-namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stress-test
+---
 # stress-test-deployment.yaml
 # 노드 스케일링을 트리거하기 위한 리소스 집약적 워크로드
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: stress-test-workload
+  namespace: stress-test
   labels:
     app: stress-test
 spec:
@@ -28,9 +35,6 @@ spec:
           limits:
             memory: "2Gi"
             cpu: "2000m"
-      # Node affinity를 사용하여 워커 노드에만 배포
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -45,6 +49,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: memory-intensive-workload
+  namespace: stress-test
   labels:
     app: memory-intensive
 spec:
@@ -83,6 +88,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: scale-trigger-job
+  namespace: stress-test
 spec:
   parallelism: 8  # 동시에 8개 Pod 실행
   completions: 8
@@ -115,6 +121,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: distributed-workload
+  namespace: stress-test
   labels:
     app: distributed
 spec:
@@ -165,10 +172,17 @@ metadata:
   name: metrics-server
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      app: metrics-server
   template:
+    metadata:
+      labels:
+        app: metrics-server
     spec:
       containers:
       - name: metrics-server
+        image: k8s.gcr.io/metrics-server/metrics-server:v0.6.4
         args:
         - --cert-dir=/tmp
         - --secure-port=4443

@@ -76,7 +76,9 @@ fi
 
 # Minikube 초기 기동 및 설정
 echo "Minikube를 초기화하고 설정을 적용합니다..."
-minikube start --nodes 2 --cpus=4 --memory=8192 --kubernetes-version=$LATEST_K8S_VERSION
+
+# control-plane 노드(기본 노드) 생성
+minikube start --nodes=3 --cpus=2 --memory=4096m --kubernetes-version=$LATEST_K8S_VERSION
 if [ $? -ne 0 ]; then
   echo "Minikube 초기화에 실패했습니다."
   exit 1

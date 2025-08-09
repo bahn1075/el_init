@@ -7,7 +7,7 @@ set -e
 
 # 설정 변수
 MIN_NODES=2
-MAX_NODES=5
+MAX_NODES=4
 CHECK_INTERVAL=30  # 30초마다 체크
 CPU_THRESHOLD=70   # CPU 사용률 임계값 (%)
 MEMORY_THRESHOLD=80 # 메모리 사용률 임계값 (%)
