@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git kubectl kube-ps1 zsh-syntax-highlighting zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -105,41 +105,15 @@ source $ZSH/oh-my-zsh.sh
 #
 
 
-SPACESHIP_KUBECTL_CONTEXT_COLOR_GROUPS=(
-  # red if namespace is "kube-system"
-  red    '\(kube-system)$'
-
-  # else, green if "dev-01" is anywhere in the context or namespace
-  green  dev-01
-
-  # else, red if context name ends with ".k8s.local" _and_ namespace is "system"
-  red    '\.k8s\.local \(system)$'
-
-  # else, yellow if the entire content is "test-" followed by digits, and no namespace is displayed
-  yellow '^test-[0-9]+$'
-)
-
-
-
-
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 source /home/linuxbrew/.linuxbrew/opt/spaceship/spaceship.zsh
-
-alias clickhouse-dev="ssh -i ~/.ssh/clickhouse-vm-dev-aiagent.pem buildcenter@10.0.0.7"
-alias clickhouse-prd="ssh -i ~/.ssh/clickhouse-vm-prd-aiagent.pem buildcenter@10.2.1.4"
-alias neo4j-dev="ssh -i ~/.ssh/neo4j-dev-vm-aiagent-buildcnter.pem buildcenter@10.0.0.6"
-alias neo4j-prd="ssh -i ~/.ssh/neo4j-vm-prd-aiagent.pem buildcenter@10.2.1.5"
-alias prod="kubectx buildcenter-aks-aiagent-prd"
-alias develop="kubectx buildcenter-aks-aiagent"
-
-
 
 # kubectl section 설정
 SPACESHIP_KUBECTL_SHOW=true
 SPACESHIP_KUBECTL_ASYNC=true
 SPACESHIP_KUBECTL_PREFIX=" "
 SPACESHIP_KUBECTL_SUFFIX=$SPACESHIP_PROMPT_DEFAULT_SUFFIX
-#SPACESHIP_KUBECTL_SYMBOL="☸️ "
+SPACESHIP_KUBECTL_SYMBOL="☸️"
 SPACESHIP_KUBECTL_COLOR="cyan"
 
 SPACESHIP_KUBECTL_VERSION_SHOW=true
@@ -149,13 +123,7 @@ SPACESHIP_KUBECTL_VERSION_COLOR="green"
 SPACESHIP_KUBECTL_CONTEXT_SHOW=true
 SPACESHIP_KUBECTL_CONTEXT_SHOW_NAMESPACE=true
 SPACESHIP_KUBECTL_CONTEXT_COLOR="yellow"
-
-SPACESHIP_KUBECTL_CONTEXT_COLOR_GROUPS=(
-  red   '^buildcenter-aks-aiagent-prd \(.*\)$'
-  blue  '^buildcenter-aks-aiagent \(.*\)$'
-)
-
-
+SPACESHIP_KUBECTL_CONTEXT_NAMESPACE_COLOR="blue"
 
 # prompt 순서
 SPACESHIP_PROMPT_ORDER=(
@@ -173,3 +141,8 @@ SPACESHIP_PROMPT_ORDER=(
 
 # custom 영역
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+npx oh-my-logo "MY WSL" sunset --filled
