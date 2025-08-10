@@ -5,13 +5,14 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # zsh-syntax-highlighting 설치
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 # .zshrc에 플러그인 추가 (이미 있으면 중복 추가 방지)
 if ! grep -q "zsh-syntax-highlighting" ~/.zshrc; then
   sed -i 's/^plugins=(\(.*\))/plugins=(\1 zsh-syntax-highlighting)/' ~/.zshrc
   # 만약 plugins= 라인이 없다면 추가
   if ! grep -q "^plugins=" ~/.zshrc; then
-    echo "plugins=(zsh-syntax-highlighting)" >> ~/.zshrc
+    echo "plugins=(git kubectl kube-ps1 zsh-syntax-highlighting zsh-autosuggestions)" >> ~/.zshrc
   fi
   # 플러그인 활성화 코드가 없으면 추가
   echo "source \${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
