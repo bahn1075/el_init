@@ -1,0 +1,20 @@
+[Unit]
+Description=Minikube Autoscaler Service
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+ExecStart=/app/el_init/minikube_autoscaler/minikube-autoscaler.sh
+Restart=always
+RestartSec=10
+User=cozy
+Group=cozy
+Environment="HOME=/home/cozy"
+Environment="KUBECONFIG=/home/cozy/.kube/config"
+WorkingDirectory=/app/el_init/minikube_autoscaler
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

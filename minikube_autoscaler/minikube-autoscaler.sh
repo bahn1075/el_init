@@ -67,18 +67,18 @@ check_cluster_utilization() {
     local total_memory=0
     local node_count=0
     
-    log "클러스터 리소스 사용률 확인 중..."
+    log "클러스터 리소스 사용률 확인 중..." >&2
     
     # metrics-server가 없으면 설치
     if ! kubectl get deployment metrics-server -n kube-system &>/dev/null; then
-        warning "metrics-server가 없습니다. 설치 중..."
-        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+        warning "metrics-server가 없습니다. 설치 중..." >&2
+        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml >&2
         
         # metrics-server가 준비될 때까지 대기
         kubectl patch -n kube-system deployment metrics-server --type=json \
-            -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+            -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]' >&2
         
-        kubectl wait --for=condition=available --timeout=300s deployment/metrics-server -n kube-system
+        kubectl wait --for=condition=available --timeout=300s deployment/metrics-server -n kube-system >&2
         sleep 30  # 메트릭 수집 대기
     fi
     
@@ -93,7 +93,7 @@ check_cluster_utilization() {
             total_memory=$((total_memory + memory))
             node_count=$((node_count + 1))
             
-            log "노드 $node: CPU ${cpu}%, Memory ${memory}%"
+            log "노드 $node: CPU ${cpu}%, Memory ${memory}%" >&2
         fi
     done
     
@@ -204,11 +204,11 @@ make_scaling_decision() {
     log "=========================="
     
     # 스케일 아웃 조건
-    if [ $pending_pods -gt 0 ] || [ $avg_cpu -gt $CPU_THRESHOLD ] || [ $avg_memory -gt $MEMORY_THRESHOLD ]; then
+    if [ "$pending_pods" -gt 0 ] || [ "${avg_cpu:-0}" -gt "$CPU_THRESHOLD" ] || [ "${avg_memory:-0}" -gt "$MEMORY_THRESHOLD" ]; then
         warning "스케일 아웃이 필요합니다!"
         scale_out
     # 스케일 인 조건 (리소스 사용률이 낮고 대기 중인 Pod가 없을 때)
-    elif [ $pending_pods -eq 0 ] && [ $avg_cpu -lt 30 ] && [ $avg_memory -lt 40 ] && [ $current_nodes -gt $MIN_NODES ]; then
+    elif [ "$pending_pods" -eq 0 ] && [ "${avg_cpu:-0}" -lt 30 ] && [ "${avg_memory:-0}" -lt 40 ] && [ "$current_nodes" -gt "$MIN_NODES" ]; then
         warning "스케일 인을 시도합니다."
         scale_in
     else
