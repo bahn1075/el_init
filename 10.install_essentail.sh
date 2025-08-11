@@ -7,7 +7,7 @@
 #EOF
 sudo timedatectl set-timezone Asia/Seoul
 sudo dnf install epel-release -y
-sudo dnf install btop jq tree file bat zip vim curl zsh wget fontconfig lsof net-tools bind-utils socat fastfetch -y
+sudo dnf install btop yq jq tree file bat zip vim curl zsh wget fontconfig lsof net-tools bind-utils socat fastfetch -y
 sudo dnf group install "Development Tools"
 sudo dnf update -y
 mkdir -p ~/.config/fastfetch
