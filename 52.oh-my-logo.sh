@@ -1,5 +1,5 @@
 #!/bin/bash
-
+sudo dnf install npm -y
 # oh-my-logo 설치 스크립트
 # 최신 npm 설치부터 oh-my-logo Global Installation (CLI) 설치 및 테스트
 
