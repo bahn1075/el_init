@@ -5,7 +5,7 @@
 add_newline = true
 
 # Custom format order
-format = '$directory$kubernetes$all'
+format = '$directory$kubernetes$all$character'
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
