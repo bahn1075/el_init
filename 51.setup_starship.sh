@@ -1,7 +1,34 @@
 ## install zsh
 sudo dnf install zsh -y
+
 ## oh my zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+## starship prompt 설치
+brew install starship
+
+# starship 설정 디렉토리 생성
+mkdir -p ~/.config
+
+# starship 설정 파일 복사
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cp "$SCRIPT_DIR/starship.toml" ~/.config/starship.toml
+
+# .zshrc에 starship 초기화 코드 추가
+if ! grep -q "eval \"\$(starship init zsh)\"" ~/.zshrc; then
+    echo "" >> ~/.zshrc
+    echo "# Initialize starship prompt" >> ~/.zshrc
+    echo 'eval "$(starship init zsh)"' >> ~/.zshrc
+fi
+
+# Oh My Zsh 테마를 비활성화 (starship과 충돌 방지)
+if grep -q 'ZSH_THEME="robbyrussell"' ~/.zshrc; then
+    sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME=""/' ~/.zshrc
+    echo "✓ Oh My Zsh 테마를 비활성화했습니다"
+fi
+
+echo "✓ starship 설치 및 설정 완료"
+echo "✓ 설정 파일이 ~/.config/starship.toml로 복사되었습니다"
 
 # zsh-syntax-highlighting 설치
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
