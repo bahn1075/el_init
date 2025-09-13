@@ -21,6 +21,12 @@ if ! grep -q "eval \"\$(starship init zsh)\"" ~/.zshrc; then
     echo 'eval "$(starship init zsh)"' >> ~/.zshrc
 fi
 
+# WSL 환경에서 홈 디렉토리 설정
+echo "" >> ~/.zshrc
+echo "# WSL Home Directory Setting" >> ~/.zshrc
+echo "# Always start in Linux home directory" >> ~/.zshrc
+echo 'cd ~' >> ~/.zshrc
+
 # Oh My Zsh 테마를 비활성화 (starship과 충돌 방지)
 if grep -q 'ZSH_THEME="robbyrussell"' ~/.zshrc; then
     sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME=""/' ~/.zshrc

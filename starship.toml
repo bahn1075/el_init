@@ -41,15 +41,16 @@ disabled = false
 added_style = 'bold blue'
 format = '[+$added]($added_style)/[-$deleted]($deleted_style) '
 
+
 [git_status]
 conflicted = '🏳'
 ahead = '🏎💨'
 behind = '😰'
 diverged = '😵'
-up_to_date = '[✓](green)'
+up_to_date = '[✓](yellow)'
 untracked = '🤷'
 stashed = '📦'
 modified = '📝'
-staged = '[++\($count\)](green)'
+staged = '[++($count)](green)'
 renamed = '👅'
 deleted = '🗑'
