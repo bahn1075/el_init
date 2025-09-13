@@ -14,6 +14,20 @@ mkdir -p ~/.config
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cp "$SCRIPT_DIR/starship.toml" ~/.config/starship.toml
 
+# fastfetch 설정 디렉토리 생성 및 설정 파일 복사
+mkdir -p ~/.config/fastfetch
+cp "$SCRIPT_DIR/fastfetch_config.jsonc" ~/.config/fastfetch/config.jsonc
+
+# .zshrc에 fastfetch 자동 실행 추가 (터미널 시작시)
+if ! grep -q "fastfetch" ~/.zshrc; then
+    echo "" >> ~/.zshrc
+    echo "# Run fastfetch on terminal start" >> ~/.zshrc
+    echo "fastfetch" >> ~/.zshrc
+fi
+
+echo "✓ fastfetch 설정 완료"
+echo "✓ 설정 파일이 ~/.config/fastfetch/config.jsonc로 복사되었습니다"
+
 # .zshrc에 starship 초기화 코드 추가
 if ! grep -q "eval \"\$(starship init zsh)\"" ~/.zshrc; then
     echo "" >> ~/.zshrc

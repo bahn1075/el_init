@@ -252,5 +252,26 @@ main() {
     echo ""
 }
 
+# 사용자 입력을 받아 ~/.zshrc에 oh-my-logo 설정 추가
+setup_zshrc_logo() {
+    echo ""
+    log_info "터미널 시작시 표시할 문구를 입력하세요:"
+    read -p "문구: " user_text
+    
+    # 입력값 검증
+    if [[ -z "$user_text" ]]; then
+        log_warning "텍스트가 입력되지 않아 설정을 건너뜁니다."
+        return 0
+    fi
+    
+    # ~/.zshrc에 oh-my-logo 설정 추가
+    echo "" >> ~/.zshrc
+    echo "# oh-my-logo 설정" >> ~/.zshrc
+    echo "oh-my-logo \"$user_text\" sunset --filled" >> ~/.zshrc
+    
+    log_success "~/.zshrc에 oh-my-logo 설정이 추가되었습니다!"
+    log_info "새 터미널을 열면 로고가 표시됩니다."
+}
+
 # 스크립트 실행
 main "$@"
