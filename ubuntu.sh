@@ -171,3 +171,10 @@ https://kcloud.lgcns.com/vmCubeClients/Tilon/linux/Linker-Linux-v8.0.0.2.deb
 6. Firefox 종료
 
 7. 접속 재시도
+
+
+<설치 후 라이브러리 이슈로 미동작 시 조치 방법>
+
+1. 라이브러리 설치
+
+- sudo apt install libasound2-dev libpulse-dev zlib1g-dev libssl-dev clang-format libkrb5-dev libsystemd-dev libcjson-dev libavcodec-dev libavutil-dev libswresample-dev liburiparser-dev libjson-c-dev libicu-dev libcups2-dev libfuse3-dev libsdl2-dev libcurl4-openssl-dev libsdl2-ttf-dev libusb-1.0-0-dev libswscale-dev libavformat-dev libavutil-dev libavdevice-dev nlohmann-json3-dev
