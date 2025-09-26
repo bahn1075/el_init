@@ -19,6 +19,17 @@ disabled = true
 truncation_length = 0
 truncate_to_repo = false
 
+[docker_context]
+format = 'via [🐋 $context](blue bold)'
+
+[memory_usage]
+disabled = false
+threshold = -1
+symbol = ' '
+style = 'bold dimmed green'
+
+
+
 [kubernetes]
 disabled = false
 format = '[$symbol$context \([$namespace](yellow)\)]($style) '
