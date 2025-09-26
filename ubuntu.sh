@@ -140,6 +140,13 @@ https://kcloud.lgcns.com/vmCubeClients/Tilon/linux/Linker-Linux-v8.0.0.2.deb
 
 <설치>
 
+0. 의존성 사전설치
+sudo apt update
+sudo apt install libqt5websockets5 libqt5websockets5-dev
+
+# 또는 더 포괄적으로 Qt5 관련 패키지 설치
+sudo apt install qtbase5-dev qt5-qmake libqt5websockets5
+
 1. 다운로드 디렉토리에서 패키지 설치
 
     - sudo dpkg -i Linker-Linux~~.deb(linker client 파일)
