@@ -127,3 +127,47 @@ curl -fsSL https://raw.githubusercontent.com/bahn1075/el_init/oel10/72.kubectx_k
 
 # k9s 설치
 brew install k9s
+
+
+#######################################################################################################
+- Linux Client 링크
+
+https://kcloud.lgcns.com/vmCubeClients/Tilon/linux/Linker-Linux-v8.0.0.2.deb
+
+
+
+- 설치 가이드 (현재 설치 방법 간소화 작업 진행 중)
+
+<설치>
+
+1. 다운로드 디렉토리에서 패키지 설치
+
+    - sudo dpkg -i Linker-Linux~~.deb(linker client 파일)
+
+2. 서비스 등록
+
+    - sudo /usr/local/TILON/DstationClient/install.sh
+
+    - /usr/local/TILON/DstationClient/setmime.sh
+
+3. 서비스 상태 확인
+
+    - sudo systemctl status Tservice
+
+
+
+
+
+1. Firefox 실행
+
+2. 주소창에 about:config 입력
+
+3. 경고 수락
+
+4. network.protocol-handler.expose.dslinker9 을 true로 추가
+
+5. 터미널에서 "update-desktop-database ~/.local/share/applications" 명령어로 MIME DB 갱신
+
+6. Firefox 종료
+
+7. 접속 재시도
