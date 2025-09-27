@@ -1,5 +1,5 @@
 # sudo 패스워드 묻지 않음
-echo 'cozy ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/cozy
+echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
 #필수설치
 sudo apt install btop zsh curl net-tools git fonts-cascadia-code

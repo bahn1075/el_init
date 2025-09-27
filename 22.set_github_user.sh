@@ -5,8 +5,8 @@
 
 set -e  # 오류 시 스크립트 중단
 
-echo "=== GitHub 사용자 설정 스크립트 ==="
-echo "이 스크립트는 GitHub 사용을 위한 환경을 설정합니다."
+echo "=== GitHub 사용자 설정 스크립트 (Ubuntu) ==="
+echo "이 스크립트는 Ubuntu에서 GitHub 사용을 위한 환경을 설정합니다."
 echo
 
 # 현재 사용자 확인
@@ -15,12 +15,13 @@ USER_HOME=$(eval echo ~$CURRENT_USER)
 
 echo "설정 대상 사용자: $CURRENT_USER"
 echo "홈 디렉터리: $USER_HOME"
+
 echo
 
 # Git 설치 확인
 if ! command -v git &> /dev/null; then
     echo "Git이 설치되지 않았습니다. Git을 먼저 설치해 주세요."
-    echo "Oracle Linux: dnf install git"
+    echo "Ubuntu: sudo apt update && sudo apt install git -y"
     exit 1
 fi
 
@@ -154,10 +155,27 @@ if [ -z \"\$SSH_AUTH_SOCK\" ]; then
     ssh-add $SSH_KEY_PATH 2>/dev/null
 fi"
 
-# .bashrc에 SSH agent 설정 추가 (중복 방지)
+# 셸 설정 파일에 SSH agent 설정 추가 (중복 방지)
+# Ubuntu에서는 zsh나 bash를 사용할 수 있으므로 둘 다 확인
+SHELL_RC_ADDED=false
+
+# zsh 사용 중이고 .zshrc가 있으면 zsh 설정 파일에 추가
+if [[ "$SHELL" == */zsh ]] && [ -f "$USER_HOME/.zshrc" ]; then
+    if ! grep -q "SSH agent 자동 시작 설정" "$USER_HOME/.zshrc" 2>/dev/null; then
+        echo "$ssh_agent_config" | sudo -u $CURRENT_USER tee -a "$USER_HOME/.zshrc" > /dev/null
+        echo "✓ .zshrc에 SSH agent 자동 시작 설정 추가"
+        SHELL_RC_ADDED=true
+    fi
+fi
+
+# bash 설정 파일에도 추가 (zsh와 병행 사용 가능)
 if ! grep -q "SSH agent 자동 시작 설정" "$USER_HOME/.bashrc" 2>/dev/null; then
     echo "$ssh_agent_config" | sudo -u $CURRENT_USER tee -a "$USER_HOME/.bashrc" > /dev/null
-    echo "✓ .bashrc에 SSH agent 자동 시작 설정 추가"
+    if [ "$SHELL_RC_ADDED" = true ]; then
+        echo "✓ .bashrc에도 SSH agent 자동 시작 설정 추가"
+    else
+        echo "✓ .bashrc에 SSH agent 자동 시작 설정 추가"
+    fi
 fi
 
 # 공개 키 출력
@@ -180,17 +198,21 @@ if ! command -v gh &> /dev/null; then
     if [[ "$install_gh" =~ ^[Yy]$ ]]; then
         echo "GitHub CLI를 설치합니다..."
         
-        # Oracle Linux/RHEL 계열용 설치
-        if command -v dnf &> /dev/null; then
-            dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-            dnf install -y gh
-        elif command -v yum &> /dev/null; then
-            yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
-            yum install -y gh
-        else
-            echo "패키지 관리자를 찾을 수 없습니다. 수동으로 GitHub CLI를 설치해 주세요."
-            echo "https://cli.github.com/manual/installation"
+        # Ubuntu/Debian용 설치
+        echo "Ubuntu에서 GitHub CLI를 설치합니다..."
+        
+        # curl이 없으면 설치
+        if ! command -v curl &> /dev/null; then
+            sudo apt update
+            sudo apt install curl -y
         fi
+        
+        # GitHub CLI 공식 저장소 추가 및 설치
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
         
         if command -v gh &> /dev/null; then
             echo "✓ GitHub CLI 설치 완료: $(gh --version | head -1)"
@@ -236,7 +258,9 @@ echo "=== 다음 단계 ==="
 echo "1. GitHub 웹사이트(https://github.com/settings/keys)에서 SSH 키를 등록하세요"
 echo "2. 위에 출력된 공개 키를 복사하여 GitHub에 추가하세요"
 echo "3. SSH 연결 테스트: ssh -T git@github.com"
-echo "4. 새 터미널을 열거나 'source ~/.bashrc'를 실행하여 SSH agent 설정을 적용하세요"
+echo "4. 새 터미널을 열거나 현재 셸에 맞는 설정을 적용하세요:"
+echo "   - bash 사용시: source ~/.bashrc"
+echo "   - zsh 사용시: source ~/.zshrc"
 
 if command -v gh &> /dev/null; then
     echo "5. GitHub CLI 인증: gh auth login (아직 하지 않았다면)"
