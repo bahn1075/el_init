@@ -2,7 +2,7 @@
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
 #필수설치
-sudo apt install btop zsh curl net-tools git fonts-cascadia-code
+sudo apt install btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
 
 # Meslo nerd font
 curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -o /tmp/meslo.zip && unzip /tmp/meslo.zip -d /tmp/meslo && sudo mkdir -p /usr/share/fonts/truetype/meslo-nerd && sudo cp /tmp/meslo/*.ttf /usr/share/fonts/truetype/meslo-nerd/ && sudo fc-cache -fv && rm -rf /tmp/meslo*
@@ -12,8 +12,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 #brew 설치
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 #brew 설정
-echo >> /home/cozy/.zshrc
-echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/cozy/.zshrc
+echo >> /home/$USER/.zshrc
+echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/$USER/.zshrc
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     
 # zsh-syntax-highlighting 설치
@@ -37,7 +37,7 @@ source ~/.zshrc
 웹페이지 deb 파일 다운로드 후 설치
 https://www.amd.com/ko/support/download/linux-drivers.html
 위 파일 설치 후
-amdgpu-install --usecase=rocm,graphics,hip--vulkan=pro --opencl=rocr --accept-eula -y
+amdgpu-install --usecase=rocm,graphics,hip --vulkan=pro --opencl=rocr --accept-eula -y
 설치 후 확인
 ls -l /dev/dri/render*
 sudo usermod -a -G render $LOGNAME
@@ -54,12 +54,16 @@ sudo apt install rocm
 
 
 
-brew install btop starship
+brew install btop starship fastfetch
 
 # starship 설정 추가
 curl -o ~/.config/starship.toml https://raw.githubusercontent.com/bahn1075/el_init/oel10/starship.toml
 
-echo 'eval "$(starship init zsh)"' >> /home/cozy/.zshrc
+echo 'eval "$(starship init zsh)"' >> /home/$USER/.zshrc
+
+# fastfetch 설정 추가
+echo 'eval "$(fastfetch --config ~/.config/fastfetch/config.conf)"' >> /home/$USER/.zshrc
+
 source ~/.zshrc
 
 # npm 설치
@@ -108,13 +112,13 @@ minikube version
 # minikube start
 minikube config set cpus 8
 minikube config set memory 28672
-minikube start --addons=metrics-server,ingress,ingress-dns,logviewer
+minikube start --addons=metrics-server,ingress,ingress-dns,logviewer --feature-gates='ImageVolume=true'
 minikube tunnel
 
 #web logviewer 접속
 http://192.168.49.2:32000/
 
-#기동후 amd gpu plugin 설치
+#기동후 amd gpu plugin 수동 설치
 kubectl create -f https://raw.githubusercontent.com/ROCm/k8s-device-plugin/master/k8s-ds-amdgpu-dp.yaml
 
 # kubectl 설치
@@ -185,3 +189,5 @@ sudo apt install qtbase5-dev qt5-qmake libqt5websockets5
 1. 라이브러리 설치
 
 - sudo apt install libasound2-dev libpulse-dev zlib1g-dev libssl-dev clang-format libkrb5-dev libsystemd-dev libcjson-dev libavcodec-dev libavutil-dev libswresample-dev liburiparser-dev libjson-c-dev libicu-dev libcups2-dev libfuse3-dev libsdl2-dev libcurl4-openssl-dev libsdl2-ttf-dev libusb-1.0-0-dev libswscale-dev libavformat-dev libavutil-dev libavdevice-dev nlohmann-json3-dev
+
+

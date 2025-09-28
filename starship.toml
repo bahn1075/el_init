@@ -4,8 +4,11 @@
 # Inserts a blank line between shell prompts
 add_newline = true
 
+[cmd_duration]
+format = "took [$duration]($style) "
+
 # Custom format order
-format = '$directory$kubernetes$all$character'
+#format = '$directory$kubernetes$memory_usage$custom.gpu$all$character'
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
@@ -25,10 +28,16 @@ format = 'via [🐋 $context](blue bold)'
 [memory_usage]
 disabled = false
 threshold = -1
-symbol = ' '
+symbol = '🐑'
 style = 'bold dimmed green'
+format = 'via $symbol[${ram}]($style) '
 
-
+# GPU 메모리 사용률을 표시하는 커스텀 모듈
+[custom.gpu]
+command = '''rocm-smi --showmeminfo vram --csv 2>/dev/null | tail -n +2 | awk -F, '{used += $3; total += $2} END {if(total > 0) printf "%.0f", (used/total)*100; else print "N/A"}' '''
+when = "command -v rocm-smi"
+format = '[🎮$output%]($style) '
+style = 'bold dimmed green'
 
 [kubernetes]
 disabled = false
