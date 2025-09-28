@@ -2,7 +2,15 @@
 echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 
 #필수설치
-sudo apt install btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
+sudo apt update && sudo apt upgrade
+# for edge browser
+wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
+# install essentials
+sudo apt install software-properties-common apt-transport-https wget btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
+
+sudo snap install termius-app
+
 
 # Meslo nerd font
 curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -o /tmp/meslo.zip && unzip /tmp/meslo.zip -d /tmp/meslo && sudo mkdir -p /usr/share/fonts/truetype/meslo-nerd && sudo cp /tmp/meslo/*.ttf /usr/share/fonts/truetype/meslo-nerd/ && sudo fc-cache -fv && rm -rf /tmp/meslo*
@@ -54,7 +62,7 @@ sudo apt install rocm
 
 
 
-brew install btop starship fastfetch
+brew install starship fastfetch
 
 # starship 설정 추가
 curl -o ~/.config/starship.toml https://raw.githubusercontent.com/bahn1075/el_init/oel10/starship.toml
