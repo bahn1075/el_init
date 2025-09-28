@@ -5,7 +5,7 @@ echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 sudo apt update && sudo apt upgrade -y
 
 # install essentials
-sudo apt install software-properties-common apt-transport-https wget btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
+sudo apt install apt-transport-https timeshift wget btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
 
 # Meslo nerd font
 curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -o /tmp/meslo.zip && unzip /tmp/meslo.zip -d /tmp/meslo && sudo mkdir -p /usr/share/fonts/truetype/meslo-nerd && sudo cp /tmp/meslo/*.ttf /usr/share/fonts/truetype/meslo-nerd/ && sudo fc-cache -fv && rm -rf /tmp/meslo*
@@ -35,6 +35,18 @@ if ! grep -q "zsh-syntax-highlighting" ~/.zshrc; then
   echo "source \${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zshrc
 fi
 source ~/.zshrc
+# starship 설정
+brew install starship fastfetch
+
+# starship 설정 추가
+curl -o ~/.config/starship.toml https://raw.githubusercontent.com/bahn1075/el_init/ubuntu/starship.toml
+
+echo 'eval "$(starship init zsh)"' >> /home/$USER/.zshrc
+
+# fastfetch 설정 추가
+echo 'fastfetch' >> /home/$USER/.zshrc
+
+source ~/.zshrc
 
 #amd gpu driver
 웹페이지 deb 파일 다운로드 후 설치
@@ -53,21 +65,6 @@ sudo apt update
 sudo apt install python3-setuptools python3-wheel
 sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
 sudo apt install rocm
-
-
-
-
-brew install starship fastfetch
-
-# starship 설정 추가
-curl -o ~/.config/starship.toml https://raw.githubusercontent.com/bahn1075/el_init/oel10/starship.toml
-
-echo 'eval "$(starship init zsh)"' >> /home/$USER/.zshrc
-
-# fastfetch 설정 추가
-echo 'eval "$(fastfetch --config ~/.config/fastfetch/config.conf)"' >> /home/$USER/.zshrc
-
-source ~/.zshrc
 
 # npm 설치
 sudo apt install npm -y
