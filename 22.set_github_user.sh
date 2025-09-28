@@ -19,11 +19,6 @@ echo "홈 디렉터리: $USER_HOME"
 echo
 
 # Git 설치 확인
-if ! command -v git &> /dev/null; then
-    echo "Git이 설치되지 않았습니다. Git을 먼저 설치해 주세요."
-    echo "Ubuntu: sudo apt update && sudo apt install git -y"
-    exit 1
-fi
 
 echo "✓ Git 버전: $(git --version)"
 echo
@@ -41,10 +36,13 @@ if [ -n "$existing_name" ] && [ -n "$existing_email" ]; then
     echo "  이메일: $existing_email"
     echo
     read -p "기존 설정을 유지하시겠습니까? (y/N): " keep_existing
-    if [[ ! "$keep_existing" =~ ^[Yy]$ ]]; then
-        existing_name=""
-        existing_email=""
-    fi
+    case "$keep_existing" in
+        [Yy]) ;;
+        *)
+            existing_name=""
+            existing_email=""
+            ;;
+    esac
 fi
 
 # 사용자 이름 설정
@@ -74,7 +72,9 @@ if [ -z "$existing_email" ]; then
         fi
         
         # 이메일 형식 간단 검증
-        if [[ ! "$git_email" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]]; then
+        # POSIX 호환 이메일 형식 검증 (간단)
+        echo "$git_email" | grep -Eq '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+        if [ $? -ne 0 ]; then
             echo "올바른 이메일 형식이 아닙니다. 다시 입력해 주세요."
             continue
         fi
@@ -118,18 +118,30 @@ fi
 if [ -f "$SSH_KEY_PATH" ]; then
     echo "기존 SSH 키가 있습니다: $SSH_KEY_PATH"
     read -p "새로운 SSH 키를 생성하시겠습니까? (y/N): " create_new_key
-    if [[ ! "$create_new_key" =~ ^[Yy]$ ]]; then
-        echo "기존 SSH 키를 사용합니다."
-        use_existing_key=true
-    fi
+    case "$create_new_key" in
+        [Yy]) ;;
+        *)
+            echo "기존 SSH 키를 사용합니다."
+            use_existing_key=true
+            ;;
+    esac
 fi
 
 # SSH 키 생성
 if [ "$use_existing_key" != true ]; then
     echo "SSH 키를 생성합니다..."
-    read -p "SSH 키 패스프레이즈를 입력하세요 (엔터로 비워둘 수 있음): " -s ssh_passphrase
-    echo
-    
+    # read -s는 bash에서만 지원되므로 bash로 실행
+    ssh_passphrase=""
+    if [ -n "$BASH_VERSION" ]; then
+        read -s -p "SSH 키 패스프레이즈를 입력하세요 (엔터로 비워둘 수 있음): " ssh_passphrase
+        echo
+    else
+        printf "SSH 키 패스프레이즈를 입력하세요 (엔터로 비워둘 수 있음): "
+        stty -echo
+        read ssh_passphrase
+        stty echo
+        echo
+    fi
     # 기존 키 백업
     if [ -f "$SSH_KEY_PATH" ]; then
         timestamp=$(date +%Y%m%d_%H%M%S)
@@ -137,7 +149,6 @@ if [ "$use_existing_key" != true ]; then
         sudo -u $CURRENT_USER cp "$SSH_PUB_KEY_PATH" "${SSH_PUB_KEY_PATH}.backup_${timestamp}"
         echo "기존 SSH 키를 백업했습니다."
     fi
-    
     # SSH 키 생성 (RSA 4096 비트)
     sudo -u $CURRENT_USER ssh-keygen -t rsa -b 4096 -C "$git_email" -f "$SSH_KEY_PATH" -N "$ssh_passphrase"
     sudo -u $CURRENT_USER chmod 600 "$SSH_KEY_PATH"
@@ -160,13 +171,17 @@ fi"
 SHELL_RC_ADDED=false
 
 # zsh 사용 중이고 .zshrc가 있으면 zsh 설정 파일에 추가
-if [[ "$SHELL" == */zsh ]] && [ -f "$USER_HOME/.zshrc" ]; then
-    if ! grep -q "SSH agent 자동 시작 설정" "$USER_HOME/.zshrc" 2>/dev/null; then
-        echo "$ssh_agent_config" | sudo -u $CURRENT_USER tee -a "$USER_HOME/.zshrc" > /dev/null
-        echo "✓ .zshrc에 SSH agent 자동 시작 설정 추가"
-        SHELL_RC_ADDED=true
-    fi
-fi
+case "$SHELL" in
+    */zsh)
+        if [ -f "$USER_HOME/.zshrc" ]; then
+            if ! grep -q "SSH agent 자동 시작 설정" "$USER_HOME/.zshrc" 2>/dev/null; then
+                echo "$ssh_agent_config" | sudo -u $CURRENT_USER tee -a "$USER_HOME/.zshrc" > /dev/null
+                echo "✓ .zshrc에 SSH agent 자동 시작 설정 추가"
+                SHELL_RC_ADDED=true
+            fi
+        fi
+        ;;
+esac
 
 # bash 설정 파일에도 추가 (zsh와 병행 사용 가능)
 if ! grep -q "SSH agent 자동 시작 설정" "$USER_HOME/.bashrc" 2>/dev/null; then
@@ -194,32 +209,30 @@ echo "=== 3. GitHub CLI 설정 ==="
 if ! command -v gh &> /dev/null; then
     echo "GitHub CLI(gh)가 설치되지 않았습니다."
     read -p "GitHub CLI를 설치하시겠습니까? (y/N): " install_gh
-    
-    if [[ "$install_gh" =~ ^[Yy]$ ]]; then
-        echo "GitHub CLI를 설치합니다..."
-        
-        # Ubuntu/Debian용 설치
-        echo "Ubuntu에서 GitHub CLI를 설치합니다..."
-        
-        # curl이 없으면 설치
-        if ! command -v curl &> /dev/null; then
+    case "$install_gh" in
+        [Yy])
+            echo "GitHub CLI를 설치합니다..."
+            # Ubuntu/Debian용 설치
+            echo "Ubuntu에서 GitHub CLI를 설치합니다..."
+            # curl이 없으면 설치
+            if ! command -v curl &> /dev/null; then
+                sudo apt update
+                sudo apt install curl -y
+            fi
+            # GitHub CLI 공식 저장소 추가 및 설치
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
             sudo apt update
-            sudo apt install curl -y
-        fi
-        
-        # GitHub CLI 공식 저장소 추가 및 설치
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh -y
-        
-        if command -v gh &> /dev/null; then
-            echo "✓ GitHub CLI 설치 완료: $(gh --version | head -1)"
-        else
-            echo "GitHub CLI 설치에 실패했습니다."
-        fi
-    fi
+            sudo apt install gh -y
+            if command -v gh &> /dev/null; then
+                echo "✓ GitHub CLI 설치 완료: $(gh --version | head -1)"
+            else
+                echo "GitHub CLI 설치에 실패했습니다."
+            fi
+            ;;
+        *) ;;
+    esac
 fi
 
 # GitHub CLI 인증 안내
@@ -230,13 +243,15 @@ if command -v gh &> /dev/null; then
     echo "  gh auth login"
     echo
     read -p "지금 GitHub CLI 인증을 진행하시겠습니까? (y/N): " do_auth
-    
-    if [[ "$do_auth" =~ ^[Yy]$ ]]; then
-        echo "GitHub CLI 인증을 시작합니다..."
-        sudo -u $CURRENT_USER gh auth login
-    else
-        echo "나중에 'gh auth login' 명령으로 인증을 진행하세요."
-    fi
+    case "$do_auth" in
+        [Yy])
+            echo "GitHub CLI 인증을 시작합니다..."
+            sudo -u $CURRENT_USER gh auth login
+            ;;
+        *)
+            echo "나중에 'gh auth login' 명령으로 인증을 진행하세요."
+            ;;
+    esac
 fi
 
 echo

@@ -139,10 +139,12 @@ brew install k9s
 https://kcloud.lgcns.com/vmCubeClients/Tilon/linux/Linker-Linux-v8.0.0.2.deb
 
 
-
 - 설치 가이드 (현재 설치 방법 간소화 작업 진행 중)
 
 <설치>
+일단 홈페이지에서 다운로드 받는 9버전은 mime.sh가 없어서 작동하지 않음
+위에 있는 8버전을 주소창에서 직접 다운로드 받고 아래 절차대로 설치
+
 
 0. 의존성 사전설치
 sudo apt update
@@ -160,13 +162,29 @@ sudo apt install qtbase5-dev qt5-qmake libqt5websockets5
     - sudo /usr/local/TILON/DstationClient/install.sh
 
     - /usr/local/TILON/DstationClient/setmime.sh
+    => zsh: 그런 파일이나 디렉터리가 없습니다: /usr/local/TILON/DstationClient/setmime.sh
+    => 해결책
+       8버전 설치 후 파일 내용 확인 하면 아래와 같음
+       cat /usr/local/TILON/DstationClient/setmime.sh
+        mkdir -p $HOME/.local/share/mime/packages
+        cp /usr/local/TILON/DstationClient/dslinker9.xml $HOME/.local/share/mime/packages/dslinker9.xml
+        cp /usr/local/TILON/DstationClient/dslinker9.desktop $HOME/.local/share/applications
+
+        xdg-mime default dslinker9.desktop x-scheme-handler/dslinker9
+        update-mime-database ~/.local/share/mime
+        xdg-mime query default x-scheme-handler/dslinker9
+        update-mime-database ~/.local/share/mime
+
+# MIME 타입 핸들러 확인
+CURRENT_DEFAULT=$(xdg-mime query default x-scheme-handler/dslinker9)
+
+# 결과 출력
+echo "현재 x-scheme-handler/dslinker MIME 타입 핸들러: $CURRENT_DEFAULT"
+
 
 3. 서비스 상태 확인
 
     - sudo systemctl status Tservice
-
-
-
 
 
 1. Firefox 실행
