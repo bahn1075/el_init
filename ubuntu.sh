@@ -5,7 +5,7 @@ echo "$USER ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/$USER
 sudo apt update && sudo apt upgrade -y
 
 # install essentials
-sudo apt install apt-transport-https timeshift wget btop zsh curl net-tools git fonts-cascadia-code jq vim dnsutils socat -y
+sudo apt install zip timeshift wget btop zsh curl net-tools fonts-cascadia-code jq vim -y
 
 # Meslo nerd font
 curl -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/Meslo.zip -o /tmp/meslo.zip && unzip /tmp/meslo.zip -d /tmp/meslo && sudo mkdir -p /usr/share/fonts/truetype/meslo-nerd && sudo cp /tmp/meslo/*.ttf /usr/share/fonts/truetype/meslo-nerd/ && sudo fc-cache -fv && rm -rf /tmp/meslo*
