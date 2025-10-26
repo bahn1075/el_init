@@ -48,23 +48,17 @@ echo 'fastfetch' >> /home/$USER/.zshrc
 
 source ~/.zshrc
 
-#amd gpu driver
-웹페이지 deb 파일 다운로드 후 설치
-https://www.amd.com/ko/support/download/linux-drivers.html
-위 파일 설치 후
-amdgpu-install --usecase=rocm,graphics,hip --vulkan=pro --opencl=rocr --accept-eula -y
-설치 후 확인
-ls -l /dev/dri/render*
-sudo usermod -a -G render $LOGNAME
-sudo usermod -a -G video $LOGNAME
-
-
-wget https://repo.radeon.com/amdgpu-install/7.0.1/ubuntu/noble/amdgpu-install_7.0.1.70001-1_all.deb
-sudo apt install ./amdgpu-install_7.0.1.70001-1_all.deb
+#amd gpu rocm installation
+wget https://repo.radeon.com/amdgpu-install/7.0.2/ubuntu/noble/amdgpu-install_7.0.2.70002-1_all.deb
+sudo apt install ./amdgpu-install_7.0.2.70002-1_all.deb
 sudo apt update
 sudo apt install python3-setuptools python3-wheel
 sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
 sudo apt install rocm
+
+# (위에 이어서) amd gpu driver install
+sudo apt install "linux-headers-$(uname -r)" "linux-modules-extra-$(uname -r)"
+sudo apt install amdgpu-dkms
 
 # npm 설치
 sudo apt install npm -y
