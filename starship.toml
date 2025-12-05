@@ -1,0 +1,106 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Inserts a blank line between shell prompts
+add_newline = true
+
+[os]
+format = "on [$symbol]($style)"
+style = "bold blue"
+disabled = true
+
+[os.symbols]
+OracleLinux = '⊂⊃ '
+
+[hostname]
+ssh_only = false
+format = '[⊂⊃ ](bold red)[$hostname]($style) '
+style = 'bold dimmed green'
+
+[cmd_duration]
+format = "took [$duration]($style) "
+
+# Custom format order
+#format = '$directory$kubernetes$memory_usage$custom.gpu$all$character'
+
+# Replace the '❯' symbol in the prompt with '➜'
+[character] # The name of the module we are configuring is 'character'
+success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+[directory]
+truncation_length = 0
+truncate_to_repo = false
+
+[docker_context]
+format = 'via [🐋 $context](blue bold)'
+
+[memory_usage]
+disabled = false
+threshold = -1
+symbol = '🐑'
+style = 'bold bright-green'
+format = 'via $symbol[${ram}]($style) '
+
+[kubernetes]
+disabled = false
+format = '[$symbol$context \([$namespace](yellow)\)]($style) '
+style = 'blue'
+
+[git_branch]
+symbol = ' '
+truncation_length = 20
+truncation_symbol = ''
+
+[git_commit]
+commit_hash_length = 4
+tag_symbol = '🔖 '
+
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+
+[git_metrics]
+disabled = false
+added_style = 'bold blue'
+format = '[+$added]($added_style)/[-$deleted]($deleted_style) '
+
+[git_status]
+conflicted = '🏳'
+ahead = '🏎💨'
+behind = '😰'
+diverged = '😵'
+up_to_date = '[✓](green)'
+untracked = '🤷'
+stashed = '📦'
+modified = '📝'
+staged = '[++\($count\)](green)'
+renamed = '👅'
+deleted = '🗑'
+
+# OCI (Oracle Cloud Infrastructure) module
+[custom.oci]
+command = '''
+CONFIG_FILE="$HOME/.oci/config"
+if [ ! -f "$CONFIG_FILE" ]; then
+  exit 0
+fi
+
+# Get profile name (from env var or DEFAULT)
+PROFILE="${OCI_CLI_PROFILE:-DEFAULT}"
+
+# Get region from config file
+REGION=$(grep -A 10 "^\[$PROFILE\]" "$CONFIG_FILE" | grep "^region" | head -1 | cut -d'=' -f2 | tr -d ' ')
+
+if [ -n "$REGION" ]; then
+  echo "${PROFILE}:${REGION}"
+else
+  echo "${PROFILE}"
+fi
+'''
+when = 'test -f ~/.oci/config'
+format = '[☁️  $output]($style) '
+style = 'bright-black'
+description = 'Display current OCI profile and region'
