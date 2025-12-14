@@ -52,7 +52,7 @@ style = 'blue'
 
 [git_branch]
 symbol = ' '
-truncation_length = 20
+truncation_length = 50
 truncation_symbol = ''
 
 [git_commit]
@@ -102,5 +102,6 @@ fi
 '''
 when = 'test -f ~/.oci/config'
 format = '[☁️  $output]($style) '
-style = 'bright-black'
+# style = 'bright-black'
+style = 'white'
 description = 'Display current OCI profile and region'
