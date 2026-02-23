@@ -4,8 +4,24 @@
 # Inserts a blank line between shell prompts
 add_newline = true
 
+[os]
+format = "on [$symbol]($style)"
+style = "bold blue"
+disabled = true
+
+[os.symbols]
+OracleLinux = '⊂⊃ '
+
+[hostname]
+ssh_only = false
+format = '[⊂⊃ ](bold red)[$hostname]($style) '
+style = 'bold dimmed green'
+
+[cmd_duration]
+format = "took [$duration]($style) "
+
 # Custom format order
-format = '$directory$kubernetes$all$character'
+#format = '$directory$kubernetes$memory_usage$custom.gpu$all$character'
 
 # Replace the '❯' symbol in the prompt with '➜'
 [character] # The name of the module we are configuring is 'character'
@@ -25,10 +41,9 @@ format = 'via [🐋 $context](blue bold)'
 [memory_usage]
 disabled = false
 threshold = -1
-symbol = ' '
-style = 'bold dimmed green'
-
-
+symbol = '🐑'
+style = 'bold bright-green'
+format = 'via $symbol[${ram}]($style) '
 
 [kubernetes]
 disabled = false
@@ -37,7 +52,7 @@ style = 'blue'
 
 [git_branch]
 symbol = ' '
-truncation_length = 20
+truncation_length = 50
 truncation_symbol = ''
 
 [git_commit]
@@ -65,5 +80,28 @@ staged = '[++\($count\)](green)'
 renamed = '👅'
 deleted = '🗑'
 
-[os.symbols]
-OracleLinux = '⊂⊃'
+# OCI (Oracle Cloud Infrastructure) module
+[custom.oci]
+command = '''
+CONFIG_FILE="$HOME/.oci/config"
+if [ ! -f "$CONFIG_FILE" ]; then
+  exit 0
+fi
+
+# Get profile name (from env var or DEFAULT)
+PROFILE="${OCI_CLI_PROFILE:-DEFAULT}"
+
+# Get region from config file
+REGION=$(grep -A 10 "^\[$PROFILE\]" "$CONFIG_FILE" | grep "^region" | head -1 | cut -d'=' -f2 | tr -d ' ')
+
+if [ -n "$REGION" ]; then
+  echo "${PROFILE}:${REGION}"
+else
+  echo "${PROFILE}"
+fi
+'''
+when = 'test -f ~/.oci/config'
+format = '[☁️  $output]($style) '
+# style = 'bright-black'
+style = 'white'
+description = 'Display current OCI profile and region'

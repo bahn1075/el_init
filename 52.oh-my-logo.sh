@@ -231,6 +231,7 @@ main() {
     install_oh_my_logo || exit 1
     check_palettes || exit 1
     test_oh_my_logo || exit 1
+    setup_zshrc_logo
     
     echo ""
     echo -e "${GREEN}=================================================="
@@ -264,12 +265,16 @@ setup_zshrc_logo() {
         return 0
     fi
     
-    # ~/.zshrc에 oh-my-logo 설정 추가
-    echo "" >> ~/.zshrc
-    echo "# oh-my-logo 설정" >> ~/.zshrc
-    echo "oh-my-logo \"$user_text\" sunset --filled" >> ~/.zshrc
-    
-    log_success "~/.zshrc에 oh-my-logo 설정이 추가되었습니다!"
+    # ~/.zshrc에 oh-my-logo 설정 추가 (이미 있으면 교체)
+    if grep -qE "^(npx )?oh-my-logo" ~/.zshrc; then
+        sed -i -E "s|^(npx )?oh-my-logo .*|oh-my-logo \"$user_text\" fire --filled --block-font chrome --letter-spacing 2|" ~/.zshrc
+        log_success "~/.zshrc의 oh-my-logo 설정이 업데이트되었습니다!"
+    else
+        echo "" >> ~/.zshrc
+        echo "# oh-my-logo 설정" >> ~/.zshrc
+        echo "oh-my-logo \"$user_text\" fire --filled --block-font chrome --letter-spacing 2" >> ~/.zshrc
+        log_success "~/.zshrc에 oh-my-logo 설정이 추가되었습니다!"
+    fi
     log_info "새 터미널을 열면 로고가 표시됩니다."
 }
 
