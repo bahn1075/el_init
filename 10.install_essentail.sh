@@ -1,7 +1,18 @@
 #!/bin/bash
 
-# Oracle Linux 10 필수 패키지 설치 스크립트
-echo "=== Oracle Linux 10 필수 패키지 설치 시작 ==="
+# Oracle Linux 필수 패키지 설치 스크립트
+
+# OEL major 버전 감지 (/etc/os-release → rpm 순으로 fallback)
+OEL_VERSION=$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID%%.*}")
+if [ -z "$OEL_VERSION" ]; then
+    OEL_VERSION=$(rpm -E '%{rhel}' 2>/dev/null)
+fi
+if [ -z "$OEL_VERSION" ]; then
+    echo "✗ OEL 버전을 감지하지 못했습니다. 스크립트를 종료합니다."
+    exit 1
+fi
+
+echo "=== Oracle Linux ${OEL_VERSION} 필수 패키지 설치 시작 ==="
 
 # 타임존 설정
 echo "타임존을 Asia/Seoul로 설정합니다..."
@@ -9,7 +20,7 @@ sudo timedatectl set-timezone Asia/Seoul
 
 # EPEL 리포지토리 추가
 echo "EPEL 리포지토리를 추가합니다..."
-sudo dnf install -y oracle-epel-release-el10
+sudo dnf install -y oracle-epel-release-el${OEL_VERSION}
 
 # DNF로 설치 가능한 기본 패키지들
 echo "기본 패키지들을 설치합니다..."

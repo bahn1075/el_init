@@ -35,6 +35,9 @@ disabled = true
 truncation_length = 0
 truncate_to_repo = false
 
+[container]
+disabled = true
+
 [docker_context]
 format = 'via [🐋 $context](blue bold)'
 
