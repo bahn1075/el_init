@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# kubesnap 설치
+# 사용법 kubesnap / kubesnap ns / kubesnap ctx
+brew install hunsy9/kubesnap/kubesnap
+
+
 # OEL9 계열 OS에서 kubectx 및 kubens 설치 스크립트
 
 echo "kubectx 및 kubens 설치를 시작합니다..."
